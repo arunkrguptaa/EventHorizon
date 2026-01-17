@@ -1,15 +1,21 @@
 import React from 'react';
-import { Canvas } from 'react-three-fiber';
+import StarField from './components/StarField';
+import './App.css';
 
 const App = () => {
-  return (
-    <Canvas>
-      {/* Add your Three.js components here */}
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      {/* You can add more 3D objects here */}
-    </Canvas>
-  );
+    return (
+        <div className="app-container">
+            <StarField />
+            <div className="ui-panel">
+                <h1>Event Horizon</h1>
+                <p className="subtitle">Universe Navigator</p>
+                <div className="controls">
+                    <p>🖱️ Scroll to zoom</p>
+                    <p>🌟 10,000 Stars</p>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default App;
