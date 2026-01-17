@@ -1,46 +1,71 @@
-import React, { useEffect } from 'react';
-import * as THREE from 'three';
+import React, { useRef, useEffect } from 'react';
 
 const StarField = () => {
-    useEffect(() => {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+    const canvasRef = useRef(null);
+    const [isDragging, setIsDragging] = React.useState(false);
+    const [lastX, setLastX] = React.useState(0);
+    const [lastY, setLastY] = React.useState(0);
+    const [zoom, setZoom] = React.useState(1);
 
-        const stars = 10000;
-        const starGeometry = new THREE.BufferGeometry();
-        const starVertices = new Float32Array(stars * 3);
+    const draw = (context) => {
+        // Your drawing code here, taking `zoom` into account
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        // ... (draw stars with the current zoom level)
+    };
 
-        for (let i = 0; i < stars; i++) {
-            starVertices[i * 3] = (Math.random() - 0.5) * 2000;
-            starVertices[i * 3 + 1] = (Math.random() - 0.5) * 2000;
-            starVertices[i * 3 + 2] = (Math.random() - 0.5) * 2000;
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setLastX(e.clientX);
+        setLastY(e.clientY);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (isDragging) {
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            // Apply camera control logic based on dx and dy
+            setLastX(e.clientX);
+            setLastY(e.clientY);
+            // After updating positions, redraw
+            const context = canvasRef.current.getContext('2d');
+            draw(context);
         }
+    };
 
-        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
-        const starsMesh = new THREE.Points(starGeometry, starMaterial);
-        scene.add(starsMesh);
+    const handleWheel = (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            setZoom((prevZoom) => Math.min(prevZoom * 1.1, 5)); // zoom in
+        } else {
+            setZoom((prevZoom) => Math.max(prevZoom / 1.1, 1)); // zoom out
+        }
+        const context = canvasRef.current.getContext('2d');
+        draw(context);
+    };
 
-        camera.position.z = 5;
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        draw(context);
 
-        const animate = () => {
-            requestAnimationFrame(animate);
-            starsMesh.rotation.x += 0.0005;
-            starsMesh.rotation.y += 0.0005;
-            renderer.render(scene, camera);
-        };
-
-        animate();
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('wheel', handleWheel);
 
         return () => {
-            document.body.removeChild(renderer.domElement);
+            canvas.removeEventListener('mousedown', handleMouseDown);
+            canvas.removeEventListener('mouseup', handleMouseUp);
+            canvas.removeEventListener('mousemove', handleMouseMove);
+            canvas.removeEventListener('wheel', handleWheel);
         };
-    }, []);
+    }, [isDragging, lastX, lastY, zoom]);
 
-    return null;
+    return <canvas ref={canvasRef} width={800} height={600} />;
 };
 
 export default StarField;
