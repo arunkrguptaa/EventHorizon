@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useStore, { SCALES } from '../stores/useStore';
 
-// Ambient space audio URLs (royalty-free space ambience)
-const AUDIO_SOURCES = {
-    [SCALES.UNIVERSE]: 'https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3', // Deep space drone
-    [SCALES.GALAXY]: 'https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3', // Cosmic hum
-    [SCALES.SOLAR_SYSTEM]: 'https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3', // Sci-fi ambience
+// Audio tracks (Royalty Free from Mixkit)
+// Universe: Deep, heavy, cinematic (Interstellar vibe)
+const AUDIO_TRACKS = {
+    [SCALES.UNIVERSE]: 'https://assets.mixkit.co/active_storage/sfx/262/262-preview.m4a', // Deep Space Drone
+    [SCALES.GALAXY]: 'https://assets.mixkit.co/active_storage/sfx/243/243-preview.m4a',   // Ethereal/Mystery
+    [SCALES.SOLAR_SYSTEM]: 'https://assets.mixkit.co/active_storage/sfx/142/142-preview.m4a' // Sci-Fi Hum
 };
 
 const AmbientAudio = () => {
@@ -34,7 +35,7 @@ const AmbientAudio = () => {
     useEffect(() => {
         if (!audioRef.current) return;
 
-        const newSource = AUDIO_SOURCES[currentScale] || AUDIO_SOURCES[SCALES.UNIVERSE];
+        const newSource = AUDIO_TRACKS[currentScale] || AUDIO_TRACKS[SCALES.UNIVERSE];
 
         if (audioRef.current.src !== newSource) {
             const wasPlaying = !audioRef.current.paused;
