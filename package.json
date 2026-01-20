@@ -4,7 +4,8 @@
     "description": "An immersive Google Earth-like universe navigator",
     "main": "index.js",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --port 3000",
+        "start": "vite --port 3000",
         "build": "vite build",
         "preview": "vite preview"
     },
