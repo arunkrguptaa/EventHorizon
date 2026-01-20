@@ -2,9 +2,10 @@
 // Distances and sizes are scaled for visualization
 
 // Scale factors
-export const DISTANCE_SCALE = 0.5; // Scale down orbital distances
-export const SIZE_SCALE = 0.01;    // Scale down planet sizes
-export const SUN_SCALE = 0.001;    // Sun needs extra scaling (it's huge!)
+// Scale factors - Calibrated to prevent collisions
+export const DISTANCE_SCALE = 1.0; // 1 unit = 1 million km
+export const SIZE_SCALE = 0.0002;  // Earth radius ~1.2 units, Jupiter ~14 units
+export const SUN_SCALE = 0.00005;  // Sun radius ~35 units (Mercury orbit is ~58)
 
 // Planet data with real astronomical values (scaled for visualization)
 export const PLANETS = [
@@ -94,8 +95,8 @@ export const PLANETS = [
         type: 'planet',
         icon: '♃',
         color: '#d8ca9d',
-        radius: 69911 * SIZE_SCALE * 0.3, // Extra scale down for gas giants
-        orbitalRadius: 778.5 * DISTANCE_SCALE * 0.5,
+        radius: 69911 * SIZE_SCALE,
+        orbitalRadius: 778.5 * DISTANCE_SCALE,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         axialTilt: 3.1,
@@ -114,14 +115,14 @@ export const PLANETS = [
         type: 'planet',
         icon: '♄',
         color: '#f4d59e',
-        radius: 58232 * SIZE_SCALE * 0.3,
-        orbitalRadius: 1432 * DISTANCE_SCALE * 0.4,
+        radius: 58232 * SIZE_SCALE,
+        orbitalRadius: 1432 * DISTANCE_SCALE,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         axialTilt: 26.7,
         hasRings: true,
-        ringInnerRadius: 66900 * SIZE_SCALE * 0.3,
-        ringOuterRadius: 140220 * SIZE_SCALE * 0.3,
+        ringInnerRadius: 66900 * SIZE_SCALE * 1.5,
+        ringOuterRadius: 140220 * SIZE_SCALE * 1.5,
         texture: null,
         facts: {
             diameter: '116,460 km',
@@ -137,8 +138,8 @@ export const PLANETS = [
         type: 'planet',
         icon: '⛢',
         color: '#b5e3e3',
-        radius: 25362 * SIZE_SCALE * 0.3,
-        orbitalRadius: 2867 * DISTANCE_SCALE * 0.3,
+        radius: 25362 * SIZE_SCALE,
+        orbitalRadius: 2867 * DISTANCE_SCALE,
         orbitalPeriod: 30687,
         rotationPeriod: -0.72,
         axialTilt: 97.8,
@@ -157,8 +158,8 @@ export const PLANETS = [
         type: 'planet',
         icon: '♆',
         color: '#5b5ddf',
-        radius: 24622 * SIZE_SCALE * 0.3,
-        orbitalRadius: 4515 * DISTANCE_SCALE * 0.25,
+        radius: 24622 * SIZE_SCALE,
+        orbitalRadius: 4515 * DISTANCE_SCALE,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         axialTilt: 28.3,

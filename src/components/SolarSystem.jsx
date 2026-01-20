@@ -6,6 +6,7 @@ import { PLANETS } from '../data/celestialData';
 import Sun from './Sun';
 import Planet from './Planet';
 import Moon from './Moon';
+import AsteroidBelt from './AsteroidBelt';
 
 const SolarSystem = () => {
     const earthRef = useRef();
@@ -42,6 +43,9 @@ const SolarSystem = () => {
 
             {/* Moon orbiting Earth */}
             <Moon earthRef={earthMeshRef} />
+
+            {/* Asteroid Belt */}
+            <AsteroidBelt count={4000} />
         </group>
     );
 };
