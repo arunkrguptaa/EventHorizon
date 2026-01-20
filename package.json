@@ -1,1 +1,23 @@
-{\n  \"name\": \"event-horizon\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A brief description of the project.\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"dev\": \"webpack serve --mode development\",\n    \"build\": \"webpack --mode production\"\n  },\n  \"dependencies\": {\n    \"react\": \"latest\",\n    \"react-dom\": \"latest\",\n    \"three\": \"latest\"\n  },\n  \"devDependencies\": {\n    \"webpack\": \"latest\",\n    \"webpack-cli\": \"latest\"\n  }\n}
+{
+    "name": "event-horizon",
+    "version": "1.0.0",
+    "description": "An immersive Google Earth-like universe navigator",
+    "main": "index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "three": "^0.160.0",
+        "@react-three/fiber": "^8.15.0",
+        "@react-three/drei": "^9.92.0",
+        "zustand": "^4.4.0"
+    },
+    "devDependencies": {
+        "vite": "^5.0.0",
+        "@vitejs/plugin-react": "^4.2.0"
+    }
+}
