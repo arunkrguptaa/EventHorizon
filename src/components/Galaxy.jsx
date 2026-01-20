@@ -59,62 +59,119 @@ const Galaxy = ({ data, onClick }) => {
 
         const armColor = new THREE.Color(data.armColor);
         const coreColor = new THREE.Color(data.coreColor);
+        const hiiColor = new THREE.Color('#ff0055'); // Pinkish for star formation
+
+        const hasBar = data.type === GALAXY_TYPES.BARRED_SPIRAL;
+        const barLength = hasBar ? data.size * 2.5 : 0;
+        const barWidth = hasBar ? data.size * 0.6 : 0;
 
         for (let i = 0; i < count; i++) {
             let x, y, z;
+            let r, g, b;
 
-            if (data.type === GALAXY_TYPES.SPIRAL || data.type === GALAXY_TYPES.BARRED_SPIRAL) {
-                // Spiral pattern
-                const arm = Math.floor(Math.random() * (data.type === GALAXY_TYPES.BARRED_SPIRAL ? 2 : 3));
-                const angle = Math.random() * Math.PI * 4 + (arm * Math.PI * 2 / (data.type === GALAXY_TYPES.BARRED_SPIRAL ? 2 : 3));
-                const radius = Math.random() * data.size * 6;
-                const spiralFactor = 0.4; // Tighter spirals
+            // Barred Spiral Logic (Milky Way)
+            if (hasBar && i < count * 0.25) {
+                // --- BAR GENERATION ---
+                const t = (Math.random() - 0.5) * 2; // -1 to 1
+                const densityProfile = 1 - Math.abs(t);
 
-                x = Math.cos(angle + radius * spiralFactor) * radius;
-                z = Math.sin(angle + radius * spiralFactor) * radius;
-                // Flatter disk
-                y = (Math.random() - 0.5) * data.size * 0.2 * (1 - radius / (data.size * 6));
+                x = t * barLength * (0.5 + Math.random() * 0.5);
+                z = (Math.random() - 0.5) * barWidth * Math.pow(Math.abs(densityProfile), 0.5);
+                y = (Math.random() - 0.5) * barWidth * 0.3 * densityProfile;
 
-                // Add randomness (scatter)
-                const scatter = radius * 0.2;
-                x += (Math.random() - 0.5) * scatter;
-                z += (Math.random() - 0.5) * scatter;
-            } else if (data.type === GALAXY_TYPES.ELLIPTICAL) {
-                // Elliptical distribution
+                // Rotation for the bar
+                const barAngle = Math.PI / 4;
+                const bx = x * Math.cos(barAngle) - z * Math.sin(barAngle);
+                const bz = x * Math.sin(barAngle) + z * Math.cos(barAngle);
+                x = bx; z = bz;
+
+                const barCol = coreColor.clone().lerp(new THREE.Color('#ffaa66'), 0.3);
+                r = barCol.r; g = barCol.g; b = barCol.b;
+
+                sizeArray[i] = 1.0 + Math.random() * 2.0;
+            }
+            else if (data.type === GALAXY_TYPES.SPIRAL || data.type === GALAXY_TYPES.BARRED_SPIRAL) {
+                // --- SPIRAL ARMS ---
+                const arms = data.type === GALAXY_TYPES.BARRED_SPIRAL ? 2 : 3;
+                const armIndex = Math.floor(Math.random() * arms);
+                const angleOffset = Math.PI * 2 / arms * armIndex;
+
+                const distNorm = Math.pow(Math.random(), 0.7);
+                // Arms start further out for barred spirals
+                const startRadius = hasBar ? barLength * 0.5 : 0;
+                const radius = startRadius + distNorm * data.size * 6.0;
+
+                const winding = 5.0;
+                const angle = angleOffset + (winding * distNorm);
+
+                const curveX = Math.cos(angle) * radius;
+                const curveZ = Math.sin(angle) * radius;
+
+                const width = data.size * 1.5 * (0.3 + distNorm);
+                const scatterR = (Math.random() - 0.5) * width;
+                const scatterTheta = Math.random() * Math.PI * 2;
+
+                x = curveX + Math.cos(scatterTheta) * scatterR;
+                z = curveZ + Math.sin(scatterTheta) * scatterR;
+
+                y = (Math.random() - 0.5) * data.size * 1.0 * Math.exp(-distNorm * 3);
+
+                // Colors
+                let baseCol = coreColor.clone().lerp(armColor, distNorm);
+
+                // Dust lanes (gaps/darker patches)
+                const noise = Math.sin(x * 0.4) * Math.cos(z * 0.4);
+                if (noise > 0.6 && distNorm > 0.2) {
+                    baseCol.multiplyScalar(0.5).add(new THREE.Color(0.1, 0.05, 0));
+                }
+
+                // Star forming regions
+                if (Math.random() > 0.97 && distNorm > 0.4) {
+                    baseCol = hiiColor;
+                }
+
+                r = baseCol.r; g = baseCol.g; b = baseCol.b;
+                sizeArray[i] = 0.8 + Math.random() * 2.2;
+            }
+            else if (data.type === GALAXY_TYPES.ELLIPTICAL) {
+                // Elliptical Logic
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
-                const radius = Math.pow(Math.random(), 0.4) * data.size * 4; // Dense core
+                const rNorm = Math.pow(Math.random(), 0.4);
+                const radius = rNorm * data.size * 4;
 
                 x = radius * Math.sin(phi) * Math.cos(theta);
                 y = radius * Math.sin(phi) * Math.sin(theta) * 0.7;
                 z = radius * Math.cos(phi);
-            } else {
+
+                const col = coreColor.clone().lerp(new THREE.Color('#ffffff'), rNorm * 0.5);
+                r = col.r; g = col.g; b = col.b;
+                sizeArray[i] = 1.0 + Math.random() * 2.0;
+            }
+            else {
                 // Irregular
                 const clumpX = (Math.random() - 0.5) * data.size * 3;
                 const clumpZ = (Math.random() - 0.5) * data.size * 3;
                 x = clumpX + (Math.random() - 0.5) * data.size * 1.5;
                 z = clumpZ + (Math.random() - 0.5) * data.size * 1.5;
                 y = (Math.random() - 0.5) * data.size * 0.8;
+
+                r = armColor.r; g = armColor.g; b = armColor.b;
+                sizeArray[i] = 1.0 + Math.random() * 2.0;
             }
+
+            // Global noise
+            r += (Math.random() - 0.5) * 0.1;
+            g += (Math.random() - 0.5) * 0.1;
+            b += (Math.random() - 0.5) * 0.1;
 
             posArray[i * 3] = x;
             posArray[i * 3 + 1] = y;
             posArray[i * 3 + 2] = z;
 
-            // Color gradient from core to arms
-            const distFromCenter = Math.sqrt(x * x + z * z) / (data.size * 6);
-            const mixedColor = coreColor.clone().lerp(armColor, Math.min(distFromCenter * 1.2, 1));
-
-            // Add slight random variation
-            mixedColor.r += (Math.random() - 0.5) * 0.1;
-            mixedColor.g += (Math.random() - 0.5) * 0.1;
-            mixedColor.b += (Math.random() - 0.5) * 0.1;
-
-            colorArray[i * 3] = mixedColor.r;
-            colorArray[i * 3 + 1] = mixedColor.g;
-            colorArray[i * 3 + 2] = mixedColor.b;
-
-            sizeArray[i] = 0.8 + Math.random() * 2.0;
+            colorArray[i * 3] = r;
+            colorArray[i * 3 + 1] = g;
+            colorArray[i * 3 + 2] = b;
         }
 
         return { positions: posArray, colors: colorArray, sizes: sizeArray };
